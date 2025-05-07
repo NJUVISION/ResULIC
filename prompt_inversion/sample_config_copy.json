@@ -1,0 +1,13 @@
+{
+    "prompt_len": 6,
+    "iter": 500,
+    "lr": 0.3,
+    "weight_decay": 0.1,
+    "prompt_bs": 1,
+    "loss_weight": 0.1,
+    "loss_diffusion": 1,
+    "print_step": 500,
+    "batch_size": 1,
+    "clip_model": "ViT-H-14",
+    "clip_pretrain": "laion2b_s32b_b79k"
+}
