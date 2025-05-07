@@ -41,7 +41,7 @@
 
 3. Start training.
    ```
-   bash train.sh 
+   bash stage1.sh 
    ```
 #### Stage 2: 
 
