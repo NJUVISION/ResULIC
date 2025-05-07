@@ -16,7 +16,6 @@ from ldm.xformers_state import disable_xformers
 from model.spaced_sampler import SpacedSampler
 # from model.ddim_sampler import DDIMSampler
 from model.ddim_zc import DDIMSampler
-from model.diffeic import DiffEIC
 from utils.image import pad
 from utils.common import instantiate_from_config, load_state_dict
 from utils.file import list_image_files, get_file_name_parts
@@ -150,9 +149,9 @@ def parse_args() -> Namespace:
         type=str, 
         default="wavelet", 
         choices=["wavelet", "adain", "none"])
-    parser.add_argument("--ckpt", default='/workspace/test/DiffEIC/logs2/1_1_6_1_add_xs_eps_300_stage2/lightning_logs/version_0/checkpoints/step=84999.ckpt', type=str, help="Full checkpoint path")
-    parser.add_argument("--config", default='/workspace/test/DiffEIC/configs/model/stage2/1_1_4/cldm_eps_300_ddim.yaml', type=str, help="Model config path")
-    parser.add_argument("--json_file_path", type=str, default="/workspace/test/DiffEIC/results_win_res_40/kodak_36_lpips_2.5_3_0.0_add700/kodak_detailed.json")
+    parser.add_argument("--ckpt", default='**', type=str, help="Full checkpoint path")
+    parser.add_argument("--config", default='**', type=str, help="Model config path")
+    parser.add_argument("--json_file_path", type=str, default="**.json")
     parser.add_argument("--input", type=str, default= '/workspace/test/PRO2.0/Kodak', help="Path to input images")
     parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"])
     # parser.add_argument("--steps", default=30, type=int)
@@ -177,7 +176,7 @@ def main() -> None:
     if args.device == "cpu":
         disable_xformers()  
 
-    model: DiffEIC = instantiate_from_config(OmegaConf.load(args.config))
+    model = instantiate_from_config(OmegaConf.load(args.config))
     load_state_dict(model, torch.load(args.ckpt, map_location="cuda"), strict=False)
     model.preprocess_model.update(force=True)
     model.freeze()
@@ -191,7 +190,6 @@ def main() -> None:
     dists_metric = DeepImageStructureTextureSimilarity().to(args.device)
     dists_metric_2 = DeepImageStructureTextureSimilarity().to(args.device)
 
-    # json_file_path = '/workspace/test/DiffEIC/results_win_res_40/kodak_36_lpips_2.5_3_0.0_add700/kodak_detailed.json'
     with open(args.json_file_path, 'r') as json_file:
         prompt_data = json.load(json_file)
 

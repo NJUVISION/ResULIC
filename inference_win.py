@@ -16,7 +16,6 @@ from ldm.xformers_state import disable_xformers
 from model.spaced_sampler import SpacedSampler
 # from model.ddim_sampler import DDIMSampler
 from model.ddim_zc import DDIMSampler
-from model.diffeic import DiffEIC
 from utils.image import pad
 from utils.common import instantiate_from_config, load_state_dict
 from utils.file import list_image_files, get_file_name_parts
@@ -156,7 +155,7 @@ def main() -> None:
     if args.device == "cpu":
         disable_xformers()  
 
-    model: DiffEIC = instantiate_from_config(OmegaConf.load(args.config))
+    model = instantiate_from_config(OmegaConf.load(args.config))
     load_state_dict(model, torch.load(args.ckpt, map_location="cuda"), strict=False)
     model.preprocess_model.update(force=True)
     model.freeze()

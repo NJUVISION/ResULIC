@@ -16,7 +16,6 @@ from ldm.xformers_state import disable_xformers
 from model.spaced_sampler import SpacedSampler
 # from model.ddim_sampler import DDIMSampler
 from model.ddim_zc import DDIMSampler
-from model.diffeic import DiffEIC
 from utils.image import pad
 from utils.common import instantiate_from_config, load_state_dict
 from utils.file import list_image_files, get_file_name_parts
@@ -126,7 +125,6 @@ def parse_args() -> Namespace:
     
     parser.add_argument("--ckpt", default='/workspace/SRIC/logs2/1/step=59999.ckpt', type=str, help="Full checkpoint path")
     parser.add_argument("--config", default='/workspace/SRIC/configs/model/stage2/1_1_1/cldm_eps_100_ddim.yaml', type=str, help="Model config path")
-    # parser.add_argument("--json_file_path", type=str, default="/workspace/test/DiffEIC/results_win_res_40/kodak_36_lpips_2.5_3_0.0_add700/kodak_detailed.json")
     parser.add_argument("--input", type=str, default= '/workspace/SRIC/Kodak', help="Path to input images")
     parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"])
     # parser.add_argument("--steps", default=30, type=int)
@@ -160,7 +158,7 @@ def main() -> None:
     if args.device == "cpu":
         disable_xformers()  
 
-    model: DiffEIC = instantiate_from_config(OmegaConf.load(args.config))
+    model = instantiate_from_config(OmegaConf.load(args.config))
     load_state_dict(model, torch.load(args.ckpt, map_location="cuda"), strict=True)
     model.preprocess_model.update(force=True)
     model.freeze()
@@ -170,7 +168,7 @@ def main() -> None:
     lpips_metric_2 = LearnedPerceptualImagePatchSimilarity(normalize=True).to(args.device)
     dists_metric = DeepImageStructureTextureSimilarity().to(args.device)
 
-    # json_file_path = '/workspace/test/DiffEIC/results_win_res_40/kodak_36_lpips_2.5_3_0.0_add700/kodak_detailed.json'
+    # json_file_path = '**'
     # with open(args.json_file_path, 'r') as json_file:
     #     prompt_data = json.load(json_file)
 
