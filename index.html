@@ -456,43 +456,31 @@ blockquote {
         <h2>Overview</h2>
         <hr>
         <p>
-            Generative models based on denoising, such as diffusion models and flow-based models, have been a scalable
-            approach in generating high-dimensional visual data. Recent works have started exploring diffusion models as
-            representation learners; the idea is that the hidden states of these models can capture meaningful, discriminative features.
+            Existing multimodal large model-based image compression frameworks often rely on a fragmented integration of semantic retrieval, latent compression, and generative models, 
+            resulting in suboptimal performance in both reconstruction fidelity and coding efficiency. 
+            To address these challenges, we propose a residual-guided ultra lowrate image compression named <span style="font-weight: bold; background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px;">ResULIC</span>, 
+            which incorporates residual signals into both semantic retrieval and the diffusion-based generation process.
         </p>    
 
         <p>
-            We identify that the main challenge in training diffusion models stems from the need to learn a high-quality internal representation.
-            In particular, we show: 
-        </p>
-        <p>
-            <blockquote>    
+            <blockquote> 
                 <p>
-                The performance of generative <b>diffusion models can be improved dramatically</b> when they are supported by an
-                <b>external high-quality representation</b> from another model, such as a self-supervised visual encoder.
+                    Specifically, we introduce <b>Semantic Residual Coding (SRC)</b> to capture the semantic disparity between the original image and its compressed latent representation. 
+                    A perceptual fidelity optimizer is further applied for superior reconstruction quality. Additionally, we present the <b>Compression-aware Diffusion Model (CDM)</b>, 
+                    which establishes an optimal alignment between bitrates and diffusion time steps, improving compression-reconstruction synergy.
                 </p>
-            </blockquote>    
-        </p>
-        <p>
-            Specifically, we introduce <b>REPresentation Alignment (REPA)</b>, a simple regularization technique
-            built on recent diffusion transformer architectures.
-            In essence, REPA distills the pretrained self-supervised visual representation of a clean image into 
-            the diffusion transformer representation of a noisy input. This regularization better aligns 
-            the diffusion model representations with the target self-supervised representations.
-        </p>
+            </blockquote>
 
-        <!-- <div class="image-grid"> -->
+        </p>
         <div class="figure">
             <img src="assets/fig1.png" alt="PDF Image">
             <!-- <img src="assets/teaser_plot_all.png" alt="PDF Image"> -->
-        </div>    
+        </div>  
         <p>
-            Notably, model training becomes significantly
-            more efficient and effective, and achieves >17.5x faster convergence than the vanilla model.
-            In terms of final generation quality, our approach achieves <b>state-of-the-art results of FID=1.42</b>
-            using classifier-free guidance with the <a href="https://arxiv.org/abs/2404.07724">guidance interval</a>.
-
+            Extensive experiments demonstrate the effectiveness of ResULIC, 
+            achieving superior objective and subjective performance compared to state-of-the-art diffusion-based methods with -80.7%</b>, <b></b>-66.3%</b> BD-rate saving in terms of LPIPS and FID.
         </p>
+
     </section>
 
     <section>
