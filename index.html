@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<script type="text/javascript" charset="utf-8" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style type="text/css">
+body {
+    font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media screen and (min-width: 980px){
+    body {
+        width: 980px;
+    }
+}
+
+h1 {
+    font-weight:300;
+    line-height: 1.15em;
+}
+
+h2 {
+    font-size: 1.75em;
+}
+a:link,a:visited {
+    color: #0E710E;
+    text-decoration: none;
+}
+a:hover {
+    color: #208799;
+}
+h1 {
+    text-align: center;
+}
+h2,h3 {
+    text-align: left;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: 500;
+}
+h2 {
+    font-weight: 400;
+    margin: 16px 0px 4px 0px;
+}
+h3 {
+    font-weight: 600;
+    margin: 16px 0px 4px 0px;
+}
+
+.paper-title {
+    padding: 1px 0px 1px 0px;
+}
+section {
+    margin: 32px 0px 32px 0px;
+    text-align: justify;
+    clear: both;
+}
+.col-5 {
+     width: 20%;
+     float: left;
+}
+.col-4 {
+     width: 25%;
+     float: left;
+}
+.col-3 {
+     width: 33%;
+     float: left;
+}
+.col-2 {
+     width: 50%;
+     float: left;
+}
+.col-1 {
+     width: 100%;
+     float: left;
+}
+
+.author-row, .affil-row {
+    font-size: 26px;
+}
+
+.author-row-new {
+    text-align: center;
+}
+
+.author-row-new a {
+    display: inline-block;
+    font-size: 20px;
+    padding: 4px;
+}
+
+.author-row-new sup {
+    color: #313436;
+    font-size: 12px;
+}
+
+.affiliations-new {
+    font-size: 18px;
+    text-align: center;
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.row {
+    margin: 16px 0px 16px 0px;
+}
+.authors {
+    font-size: 26px;
+}
+.affiliatons {
+    font-size: 18px;
+}
+.affil-row {
+    margin-top: 18px;
+}
+.teaser {
+    max-width: 100%;
+}
+.text-center {
+    text-align: center;  
+}
+.screenshot {
+    width: 256px;
+    border: 1px solid #ddd;
+}
+.screenshot-el {
+    margin-bottom: 16px;
+}
+hr {
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 0;
+}
+.material-icons {
+    vertical-align: -6px;
+}
+p {
+    line-height: 1.25em;
+}
+.caption {
+    font-size: 16px;
+    color: #666;
+    margin-top: 4px;
+    margin-bottom: 10px;
+}
+video {
+    display: block;
+    margin: auto;
+}
+figure {
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#bibtex pre {
+    font-size: 14px;
+    background-color: #eee;
+    padding: 16px;
+}
+.green {
+    color: #0E710E;
+    font-weight: bold;
+}
+.orange {
+    color: #d35400;
+    font-weight: bold;
+}
+.flex-row {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.coming-soon {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+}
+
+.paper-btn:hover {
+    color: #FF8563;
+    transform: translateY(-2px);
+}
+
+.paper-btn-parent {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0px;
+    gap: 25px;
+    font-size: 20px;
+}
+
+.github-btn:hover {
+    color: #FF8563;
+    transform: translateY(-2px);
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.venue {
+    font-size: 23px;
+}
+
+.topnav {
+    background-color: #EEEEEE;
+    overflow: hidden;
+}
+
+.topnav div {
+    max-width: 1070px;
+    margin: 0 auto;
+}
+
+.topnav a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    padding: 16px 16px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.topnav img {
+    padding: 2px 0px;
+    width: 100%;
+    margin: 0.2em 0px 0.3em 0px;
+    vertical-align: middle;
+}
+
+pre {
+    font-size: 0.9em;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-radius: 3px;
+    background-color: rgb(235, 235, 235);
+    overflow-x: auto;
+}
+
+.download-thumb {
+    display: flex;
+}
+
+@media only screen and (max-width: 620px) {
+    .download-thumb {
+        display: none;
+    }
+}
+
+.paper-stuff {
+    width: 50%;
+    font-size: 20px;
+}
+
+@media only screen and (max-width: 620px) {
+    .paper-stuff {
+        width: 100%;
+    }
+}
+* {
+  box-sizing: border-box;
+}
+
+.column {
+  text-align: center;
+  float: left;
+  width: 16.666%;
+  padding: 5px;
+}
+.column3 {
+  text-align: center;
+  float: left;
+  width: 33.333%;
+  padding: 5px;
+}
+.border-right {
+    border-right: 1px solid black;
+}
+.border-bottom{
+    border-bottom: 1px solid black;
+}
+
+/* Clearfix (clear floats) */
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 10px;
+    width: 100%; 
+}
+
+.image-grid img {
+    width: 100%; 
+}
+
+.image-grid img:first-child {
+    object-fit: contain;
+}
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 500px) {
+  .column {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .column3 {
+    width: 100%;
+  }
+}
+
+.figure img {
+    width: 100%; 
+}
+
+.image-grid-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    width: 90%;
+    justify-items: center;
+    margin: 0 auto;
+}
+
+.image-grid-three img {
+    width: 100%; 
+}
+
+.image-grid-tab {
+    text-align: center;
+    justify-content: center;
+    display: grid;
+    place-items: center;
+    grid-template-columns: 1fr 1.22fr;
+    gap: 10px;
+    width: 90%;
+    justify-items: center;
+    margin: 0 auto;
+}
+
+.image-grid-tab img {
+    width: 100%; 
+}
+
+blockquote {
+    background-color: rgba(40, 40, 40, 0.2);
+    padding: 0px;
+    margin: 2px 0;
+    border-radius: 10px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+</style>
+
+<script type="text/javascript" src="../js/hidebib.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,600,400italic,600italic,300,300italic' rel='stylesheet' type='text/css'>
+    <head>
+        <title>Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:description" content="Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link href="https://fonts.googleapis.com/css2?family=FontAwesome" rel="stylesheet">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:creator" content="@sihyun_yu">
+        <meta name="twitter:title" content="Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think">
+    </head>
+
+ <body>
+<div class="container">
+    <div class="paper-title">
+    <h1>
+        Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion
+    </h1>
+    </div>
+
+    <div id="authors">
+        <center>
+            <div class="author-row-new">
+                <a href="https://sihyun.me">Anle Ke<sup>1</sup></a>,
+                <a href="https://sang-kyung.github.io/">Xu Zhang<sup>1</sup></a>,
+                <a href="https://huiwon-jang.github.io/">Tong Chen<sup>1</sup></a>,
+                <a href="https://jh-jeong.github.io/">Ming Lu<sup>1</sup></a>,
+                <a href="http://jonathan-huang.org/">Chao Zhou<sup>2</sup></a>,
+              <a href="https://alinlab.kaist.ac.kr/shin.html">Jiawen Gu<sup>2</sup></a>,
+                <a href="https://www.sainingxie.com/">Zhan Ma<sup>1</sup></a>
+            </div>
+        </center>
+        <center>
+        <div class="affiliations">
+            <sup>1</sup>Nanjing University</span>&nbsp;&nbsp;&nbsp;
+            <sup>2</sup>Kuaishou Technology</span>&nbsp;&nbsp;&nbsp;
+        </div>
+        <!-- <div class="affiliations">
+            <span><sup>*</sup>Equal Advising.</span>&nbsp;&nbsp;&nbsp;
+        </div> -->
+            <div class="affil-row">
+            <div class="venue text-center"><b>ICML 2025</b></div>
+        </div>
+
+        </center>
+
+        <div style="clear: both">
+            <div class="paper-btn-parent">
+                <a class="paper-btn" href="http://arxiv.org/abs/2410.06940">
+                    <span class="fas fa-file-alt"></span> 
+                    Paper
+                </a>   
+                <a class="github-btn" href="https://github.com/sihyun-yu/REPA">
+                    <span class="fab fa-github"></span> 
+                    Code
+                </a>           
+           </div>
+        </div>
+        <div class="figure">
+            <img src="assets/compare.jpg" alt="PDF Image">
+        </div>    
+    </div>
+    <section id="news">
+        <h2>News</h2>
+        <hr>
+        <div class="row">
+            <div><span class="material-icons"> event </span> [May 2025] Our paper is accepted to ICML 2025.</div>
+            <div><span class="material-icons"> event </span> [June 2025] Our project page is released.</div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Overview</h2>
+        <hr>
+        <p>
+            Generative models based on denoising, such as diffusion models and flow-based models, have been a scalable
+            approach in generating high-dimensional visual data. Recent works have started exploring diffusion models as
+            representation learners; the idea is that the hidden states of these models can capture meaningful, discriminative features.
+        </p>    
+
+        <p>
+            We identify that the main challenge in training diffusion models stems from the need to learn a high-quality internal representation.
+            In particular, we show: 
+        </p>
+        <p>
+            <blockquote>    
+                <p>
+                The performance of generative <b>diffusion models can be improved dramatically</b> when they are supported by an
+                <b>external high-quality representation</b> from another model, such as a self-supervised visual encoder.
+                </p>
+            </blockquote>    
+        </p>
+        <p>
+            Specifically, we introduce <b>REPresentation Alignment (REPA)</b>, a simple regularization technique
+            built on recent diffusion transformer architectures.
+            In essence, REPA distills the pretrained self-supervised visual representation of a clean image into 
+            the diffusion transformer representation of a noisy input. This regularization better aligns 
+            the diffusion model representations with the target self-supervised representations.
+        </p>
+
+        <!-- <div class="image-grid"> -->
+        <div class="figure">
+            <img src="assets/fig1.png" alt="PDF Image">
+            <!-- <img src="assets/teaser_plot_all.png" alt="PDF Image"> -->
+        </div>    
+        <p>
+            Notably, model training becomes significantly
+            more efficient and effective, and achieves >17.5x faster convergence than the vanilla model.
+            In terms of final generation quality, our approach achieves <b>state-of-the-art results of FID=1.42</b>
+            using classifier-free guidance with the <a href="https://arxiv.org/abs/2404.07724">guidance interval</a>.
+
+        </p>
+    </section>
+
+    <section>
+        <h2>Observations</h2>
+        <hr>
+        <h3>Alignment behavior for a pretrained SiT model</h3>
+        <p>
+            We empirically investigate the feature alignment between <a href="https://dinov2.metademolab.com/">DINOv2-g</a>
+            and the original <a href="https://scalable-interpolant.github.io/">SiT-XL/2</a> checkpoint
+            trained for 7M iterations.
+            Similar to prior studies, we first observe that pretrained diffusion models do indeed learn meaningful
+            discriminative representations. However, these representations
+            are significantly inferior to those produced by DINOv2. Next, we find that the alignment between the 
+            representations learned by the diffusion model and those of DINOv2 is still considered weak, 
+            which we study by measuring their <a href="https://phillipi.github.io/prh/"><i>representation alignment</i></a>.
+            Finally, we observe this alignment between diffusion models and DINOv2 improves consistently with longer
+            training and larger models.
+        </p>
+
+        <div class="image-grid-three">
+            <img src="assets/layerwise_lin_eval_baseline.png" alt="PDF Image">
+            <img src="assets/cknna_vanilla_dinov2.png" alt="PDF Image">
+            <img src="assets/cknna_progression_vanilla.png" alt="PDF Image">
+        </div>
+
+        <h3>Bridging the representation gap</h3>
+
+        <p>
+        REPA reduces the semantic gap in the representation and better aligns it with the target self-supervised
+        representations. Interestingly, with REPA, we observe that sufficient representation alignment
+        can be achieved by aligning only the first few transformer blocks. This, in turn, allows the later layers
+        of the diffusion transformers to focus on capturing high-frequency details based on the aligned representations,
+        further improving generation performance.
+        </p>
+
+        <div class="image-grid-three">
+            <img src="assets/lin_eval_diff.png" alt="PDF Image">
+            <img src="assets/cknna_diff.png" alt="PDF Image">
+            <img src="assets/slope_diff.png" alt="PDF Image">
+        </div>
+    </section>
+
+    <section>
+        <h2>Results</h2>
+        <hr>
+        <h3>REPA improves visual scaling</h3>
+        <p>
+            We first compare the images generated by two SiT-XL/2 models during the first 400K iterations, with REPA
+            applied to one of the models. Both models share the same noise, sampler, and number of sampling steps, 
+            and neither uses classifier-free guidance. The model trained with REPA shows much better progression.
+        </p>
+        <div class="figure">
+            <img src="assets/qual_progression.jpg" alt="PDF Image">
+        </div>    
+
+        <h3>REPA shows great scalability in various perspectives</h3>
+        <p>
+            We also examine the scalability of REPA by varying pretrained encoders and diffusion transformer model sizes,
+            showing that aligning with better visual representations leads to improved generation and linear probing results.
+            REPA also provides more significant speedups in larger models, achieving faster FID-50K improvements compared to 
+            vanilla models. Additionally, increasing model size yields faster gains in both generation and linear evaluation.
+        </p>
+        <div class="image-grid-three">
+            <img src="assets/encoder_type.png" alt="PDF Image">
+            <img src="assets/scaling_law.png" alt="PDF Image">
+            <img src="assets/loglinear_correlation.png" alt="PDF Image">
+        </div>
+
+
+
+        <h3>REPA significantly improves training efficiency and generation quality</h3>
+        <p>
+             Finally, we compare the FID values between vanilla DiT or SiT models and those trained with REPA. 
+             Without classifier-free guidance, REPA achieves FID=7.9 at 400K iterations,
+             outperforming the vanilla model's performance at 7M iterations. Moreover, using classifier-free guidance, 
+             SiT-XL/2 with REPA outperforms recent diffusion models with 7× fewer epochs, and achieves state-of-the-art FID=1.42
+             with additional guidance scheduling.
+        </p>
+
+        <div class="image-grid-tab">
+            <img src="assets/tab_wo_cfg.png" alt="PDF Image">
+            <img src="assets/tab_w_cfg.png" alt="PDF Image">
+        </div>
+    </section>
+
+    <section id="bibtex">
+        <h2>Citation</h2>
+        <hr>
+        <pre><code>@inproceedings{yu2024repa,
+    title={Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think},
+    author={Sihyun Yu and Sangkyung Kwak and Huiwon Jang and Jongheon Jeong and Jonathan Huang and Jinwoo Shin and Saining Xie},
+    year={2025},
+    booktitle={International Conference on Learning Representations},
+}</code></pre>
+    </section>
+
+</div>
+</body>
+</html>
