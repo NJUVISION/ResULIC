@@ -1,10 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 
 <script type="text/javascript" charset="utf-8" src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> -->
 
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>ResULIC</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Polyfill for older browsers -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+        </script>
+
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
 <style type="text/css">
 body {
     font-family: "Titillium Web", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
@@ -378,6 +408,31 @@ blockquote {
     padding-right: 5px;
 }
 
+.figure .custom-width {
+        width: 90%; 
+        display: block; /* 移除图片下方的空白间隙 */
+        margin-left: auto; /* 自动调整左边距，使图片水平居中 */
+        margin-right: auto; /* 自动调整右边距，使图片水平居中 */
+    }
+
+/* .figure {
+max-width: 800px;
+margin: 20px auto;
+text-align: center;
+} */
+
+.figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.figure .caption {
+    font-size: 16px;
+    margin-top: 10px;
+    line-height: 1.5;
+    color: #333;
+}
 </style>
 
 <script type="text/javascript" src="../js/hidebib.js"></script>
@@ -453,7 +508,7 @@ blockquote {
     </section>
 
     <section>
-        <h2>Overview</h2>
+        <h2>Abstract</h2>
         <hr>
         <p>
             Existing multimodal large model-based image compression frameworks often rely on a fragmented integration of semantic retrieval, latent compression, and generative models, 
@@ -463,117 +518,109 @@ blockquote {
         </p>    
 
         <p>
-            <blockquote> 
-                <p>
-                    Specifically, we introduce <b>Semantic Residual Coding (SRC)</b> to capture the semantic disparity between the original image and its compressed latent representation. 
-                    A perceptual fidelity optimizer is further applied for superior reconstruction quality. Additionally, we present the <b>Compression-aware Diffusion Model (CDM)</b>, 
-                    which establishes an optimal alignment between bitrates and diffusion time steps, improving compression-reconstruction synergy.
-                </p>
-            </blockquote>
-
+            Specifically, we introduce <b>Semantic Residual Coding (SRC)</b> to capture the semantic disparity between the original image and its compressed latent representation. 
+            A perceptual fidelity optimizer is further applied for superior reconstruction quality. Additionally, we present the <b>Compression-aware Diffusion Model (CDM)</b>, 
+            which establishes an optimal alignment between bitrates and diffusion time steps, improving compression-reconstruction synergy.
         </p>
         <div class="figure">
-            <img src="assets/fig1.png" alt="PDF Image">
+            <img src="assets/fig1.png" alt="PDF Image" >
             <!-- <img src="assets/teaser_plot_all.png" alt="PDF Image"> -->
         </div>  
-        <p>
-            Extensive experiments demonstrate the effectiveness of ResULIC, 
-            achieving superior objective and subjective performance compared to state-of-the-art diffusion-based methods with -80.7%</b>, <b></b>-66.3%</b> BD-rate saving in terms of LPIPS and FID.
-        </p>
+        
 
     </section>
 
     <section>
-        <h2>Observations</h2>
+        <h2>Overview</h2>
         <hr>
-        <h3>Alignment behavior for a pretrained SiT model</h3>
-        <p>
-            We empirically investigate the feature alignment between <a href="https://dinov2.metademolab.com/">DINOv2-g</a>
-            and the original <a href="https://scalable-interpolant.github.io/">SiT-XL/2</a> checkpoint
-            trained for 7M iterations.
-            Similar to prior studies, we first observe that pretrained diffusion models do indeed learn meaningful
-            discriminative representations. However, these representations
-            are significantly inferior to those produced by DINOv2. Next, we find that the alignment between the 
-            representations learned by the diffusion model and those of DINOv2 is still considered weak, 
-            which we study by measuring their <a href="https://phillipi.github.io/prh/"><i>representation alignment</i></a>.
-            Finally, we observe this alignment between diffusion models and DINOv2 improves consistently with longer
-            training and larger models.
-        </p>
-
-        <div class="image-grid-three">
-            <img src="assets/layerwise_lin_eval_baseline.png" alt="PDF Image">
-            <img src="assets/cknna_vanilla_dinov2.png" alt="PDF Image">
-            <img src="assets/cknna_progression_vanilla.png" alt="PDF Image">
+        <div class="figure">
+            <img src="assets/arc.png" alt="ResULIC Overview">
+            <div class="caption">
+                <strong>ResULIC Overview</strong>: 
+                (1) The feature compressor transforms the original image 
+                $ x $ into the compressed latent feature $ z_c $. 
+                (2) The <strong>Semantic residual retrieval (Srr)</strong> generates optimized captions by analyzing both the decoded image 
+                $ x' $ and the original $ x $, with the plugin play module 
+                <strong>Perceptual fidelity optimizer (Pfo)</strong> to further improve reconstruction quality. 
+                (3) Text tokens are embedded into $ c $ and combined with $ z_c $ as conditions for the 
+                <strong>Compression-aware Diffusion Model (CDM)</strong> to generate the final image $ x_r $.
+            </div>
         </div>
+        <blockquote> 
+            <p>
+               
+            This work is dedicated to addressing two significant challenges in image compression based on generative models:
+            <p>
+                <em><strong>Multimodal Semantic Integration:</strong></em>  
+                The effective integration of multimodal semantic information, minimizing redundancy while ensuring high perceptual fidelity at extremely low bitrates.
+            </p>
+            <p>
+                <em><strong>Compression-Generation Alignment:</strong></em> 
+                Modeling the compression ratio with the noise scale in the diffusion process, enabling efficient and consistent reconstructions across varying compression levels.
+            </p>
+        </p>
+    </blockquote> 
+            <h3>Semantic Residual Coding (SRC)</h3>
+            <p>
+                we propose
+                to implement a semantic residual coding module into our multimodal image compression framework,
+                aiming to achieve overall minimal bitrate consumption. 
+                Besides, to optimize the perceptual fidelity, 
+                we propose a differential prompt optimization strategy to find the optimal text prompts for improving the reconstruction consistency.
+            </p>    
+               
+        <p>  
+            
+        </p>
+        <!-- <div class="figure">
+            <img src="assets/pfo.png" alt="PDF Image">
+        </div> -->
+        <!-- <div class="image-grid">
+            <img src="assets/srr.png" alt="PDF Image">
+            <img src="assets/pfo.png" alt="PDF Image">
+        </div> -->
 
-        <h3>Bridging the representation gap</h3>
+        <h3>Compression-aware Diffusion Model (CDM)</h3>
 
         <p>
-        REPA reduces the semantic gap in the representation and better aligns it with the target self-supervised
-        representations. Interestingly, with REPA, we observe that sufficient representation alignment
-        can be achieved by aligning only the first few transformer blocks. This, in turn, allows the later layers
-        of the diffusion transformers to focus on capturing high-frequency details based on the aligned representations,
-        further improving generation performance.
+            For challenge 2, the degradation introduced by compression and the diffusion noising process share a common characteristic: as noise increases (or the compression ratio becomes higher), 
+            less information is preserved in the degraded image. Consequently, the compression ratio aligns inherently with the diffusion time steps. 
+            In this context, we aim to model this correlation. we incorporate the latent residual into the diffusion process and propose a Compression-aware Diffusion Process, 
+            which effectively enhances reconstruction fidelity while significantly improving decoding efficiency.
         </p>
 
-        <div class="image-grid-three">
-            <img src="assets/lin_eval_diff.png" alt="PDF Image">
-            <img src="assets/cknna_diff.png" alt="PDF Image">
-            <img src="assets/slope_diff.png" alt="PDF Image">
+        <div class="image-grid">
+            <img src="assets/CDM_1.png" alt="PDF Image">
+            <img src="assets/CDM_2.png" alt="PDF Image">
         </div>
     </section>
 
     <section>
         <h2>Results</h2>
         <hr>
-        <h3>REPA improves visual scaling</h3>
+        <h3>ResULIC achieves significant improvements in both Perceptual Realism and Perceptual Fidelity</h3>
         <p>
-            We first compare the images generated by two SiT-XL/2 models during the first 400K iterations, with REPA
-            applied to one of the models. Both models share the same noise, sampler, and number of sampling steps, 
-            and neither uses classifier-free guidance. The model trained with REPA shows much better progression.
+            Extensive experiments demonstrate the effectiveness of ResULIC, 
+            achieving superior objective and subjective performance compared to state-of-the-art diffusion-based methods PerCo with -80.7%</b>, <b></b>-66.3%</b> BD-rate saving in terms of LPIPS and FID.
         </p>
         <div class="figure">
-            <img src="assets/qual_progression.jpg" alt="PDF Image">
+            <img src="assets/clic.png" alt="PDF Image">
         </div>    
-
-        <h3>REPA shows great scalability in various perspectives</h3>
-        <p>
-            We also examine the scalability of REPA by varying pretrained encoders and diffusion transformer model sizes,
-            showing that aligning with better visual representations leads to improved generation and linear probing results.
-            REPA also provides more significant speedups in larger models, achieving faster FID-50K improvements compared to 
-            vanilla models. Additionally, increasing model size yields faster gains in both generation and linear evaluation.
-        </p>
-        <div class="image-grid-three">
-            <img src="assets/encoder_type.png" alt="PDF Image">
-            <img src="assets/scaling_law.png" alt="PDF Image">
-            <img src="assets/loglinear_correlation.png" alt="PDF Image">
-        </div>
-
-
-
-        <h3>REPA significantly improves training efficiency and generation quality</h3>
-        <p>
-             Finally, we compare the FID values between vanilla DiT or SiT models and those trained with REPA. 
-             Without classifier-free guidance, REPA achieves FID=7.9 at 400K iterations,
-             outperforming the vanilla model's performance at 7M iterations. Moreover, using classifier-free guidance, 
-             SiT-XL/2 with REPA outperforms recent diffusion models with 7× fewer epochs, and achieves state-of-the-art FID=1.42
-             with additional guidance scheduling.
-        </p>
-
-        <div class="image-grid-tab">
-            <img src="assets/tab_wo_cfg.png" alt="PDF Image">
-            <img src="assets/tab_w_cfg.png" alt="PDF Image">
-        </div>
+        
+        <div class="figure">
+            <img src="assets/table.png" alt="PDF Image">
+        </div>  
+        
     </section>
 
     <section id="bibtex">
         <h2>Citation</h2>
         <hr>
         <pre><code>@inproceedings{yu2024repa,
-    title={Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think},
-    author={Sihyun Yu and Sangkyung Kwak and Huiwon Jang and Jongheon Jeong and Jonathan Huang and Jinwoo Shin and Saining Xie},
-    year={2025},
-    booktitle={International Conference on Learning Representations},
+                    title={Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think},
+                    author={Sihyun Yu and Sangkyung Kwak and Huiwon Jang and Jongheon Jeong and Jonathan Huang and Jinwoo Shin and Saining Xie},
+                    year={2025},
+                    booktitle={International Conference on Learning Representations},
 }</code></pre>
     </section>
 
