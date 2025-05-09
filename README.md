@@ -124,3 +124,12 @@ This work is based on [ControlNet](https://github.com/lllyasviel/ControlNet), [C
 ## <a name="cite"></a>🙇‍ Citation
 
 
+If you find our work useful, please consider citing:
+
+```bibtex
+@inproceedings{Ke2025resulic,
+            author = {Ke, Anle and Zhang, Xu and Chen, Tong and Lu, Ming and Zhou, Chao and Gu, Jiawen and Ma, Zhan},
+            title = {Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion},
+            booktitle = {International Conference on Machine Learning},
+            year = {2025}}
+```
