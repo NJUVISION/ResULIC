@@ -1,6 +1,25 @@
-## Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion
+<!-- ## Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion -->
 
+<h1 align="center"> Ultra Lowrate Image Compression with Semantic Residual Coding and Compression-aware Diffusion </h1>
 
+<p align="center">
+  Anle&nbsp;Ke<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
+  Xu&nbsp;Zhang<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
+  Tong&nbsp;Chen<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
+  Ming&nbsp;Lu<sup>1</sup>&ensp; <b>&middot;</b> &ensp; 
+  Chao&nbsp;Zhou<sup>2</sup>&ensp; <b>&middot;</b> &ensp; 
+  Jiawen&nbsp;Gu<sup>2</sup>&ensp; <b>&middot;</b> &ensp;
+  Zhan&nbsp;Ma<sup>1</sup>&ensp; </b> &ensp;
+</p>
+
+<p align="center">
+  <sup>1</sup> Nanjing University &emsp; <sup>2</sup>Kuaishou Technology&emsp; 
+</p>
+
+<p align="center">
+  <a href="https://njuvision.github.io/ResULIC/">🌐 Project Page</a> &ensp;
+  <a href="https://arxiv.org/abs/xxxx">📃 Paper</a> &ensp;
+</p>
 
 <p align="center">
     <img src="./fig/arc.png" style="border-radius: 15px"><br>
@@ -83,7 +102,7 @@
     --add_steps x00
     ```
 
-3. W/ Srr, W/ Pfo.
+<!-- 3. W/ Srr, W/ Pfo.
    ```
     CUDA_VISIBLE_DEVICES=2 python inference_zc.py \
     --ckpt xx \
@@ -93,7 +112,7 @@
     --ddim_eta 0 \
     --Q x.0 \
     --add_steps x00
-    ```
+    ``` -->
 
 ## <a name="todo"></a>🌊 TODO
 - [√] Release code
