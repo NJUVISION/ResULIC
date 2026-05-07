@@ -77,14 +77,14 @@
  
 1. Download the pre-trained models (We provide 3 low-bitrate models for testing, and other bitrate models can be trained by referring to the training method):
 
-    | Bitrate   | Link       |
+    | Bitrate   | Link(used config)       |
     | --------- | ---------- |
-    | 0.03 bpp  | [stage2/1_1_4/300](https://modelscope.cn/models/kangle/SRIC-6/resolve/master/step%3D84999.ckpt) |
-    | 0.01 bpp  | [stage2/1_1_12/400](https://modelscope.cn/models/kangle/ResULIC_add_steps400_0.09/resolve/master/step%3D199999.ckpt) |
-    | 0.002 bpp | [stage2/1_1_24/600](https://modelscope.cn/models/kangle/ResULIC_add_steps600_0.0023/resolve/master/step%3D199999.ckpt) |
+    | 0.03 bpp  | [ResULIC/configs/model/stage2/1_1_3/cldm_eps_300_ddim.yaml](https://modelscope.cn/models/kangle/SRIC-6/resolve/master/step%3D84999.ckpt) |
+    | 0.01 bpp  | [ResULIC/configs/model/stage2/1_1_12/cldm_eps_400_ddim.yaml](https://modelscope.cn/models/kangle/ResULIC_add_steps400_0.09/resolve/master/step%3D199999.ckpt) |
+    | 0.002 bpp | [ResULIC/configs/model/stage2/1_1_24/cldm_eps_600_ddim.yaml](https://modelscope.cn/models/kangle/ResULIC_add_steps600_0.0023/resolve/master/step%3D199999.ckpt) |
 
    
-**Note:** It is recommended to set "ddim_steps" to a number that is divisible by "add_steps". For example, when add_steps=600, ddim_steps could be 2, 3, 5...
+**Note:** `add_steps` and `Q` are only used to distinguish the testing image settings from the corresponding model settings. These parameters do not affect the results: `add_steps` can be aligned with the value in the config file, and `Q` corresponds to the trained $\lambda$. For the three provided models, the default `ddim_steps` is 3. If you use your own trained model, it is recommended to set `ddim_steps` to a divisor of `add_steps`. For example, when `add_steps=500`, `ddim_steps` could be 2, 4, 5...
 
 1. W/o Srr, W/o Pfo.
 
@@ -117,7 +117,7 @@
     --ckpt xx \
     --config /xx/xx.yaml \
     --output xx/ \
-    --ddim_steps x \
+    --ddim_steps 3 \
     --ddim_eta 0 \
     --Q x.0 \
     --add_steps x00

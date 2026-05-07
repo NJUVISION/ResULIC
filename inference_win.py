@@ -127,23 +127,24 @@ def parse_args() -> Namespace:
         "--color_fix_type", 
         type=str, 
         default="wavelet", 
-        choices=["wavelet", "adain", "none"])
-    parser.add_argument("--ckpt", default='/workspace/SRIC/logs_new/1_1_3_add_xs_eps_300_lpips/lightning_logs/version_2/checkpoints/step=79999.ckpt', type=str, help="Full checkpoint path")
-    parser.add_argument("--config", default='/workspace/SRIC/configs/model/lpips/cldm_eps_300_ddim.yaml', type=str, help="Model config path")
+        choices=["wavelet", "adain", "none"],
+        help="Color correction method after diffusion decoding. NOTE: currently not used because the color correction code is commented out; changing it does not affect test results.")
+    parser.add_argument("--ckpt", default='/workspace/SRIC/logs_new/1_1_3_add_xs_eps_300_lpips/lightning_logs/version_2/checkpoints/step=79999.ckpt', type=str, help="Path to the trained model checkpoint used for inference. This directly determines the compression/reconstruction model.")
+    parser.add_argument("--config", default='/workspace/SRIC/configs/model/lpips/cldm_eps_300_ddim.yaml', type=str, help="Path to the model yaml config that matches the checkpoint, including the compression model and diffusion settings.")
     
-    parser.add_argument("--input", type=str, default= '/workspace/SRIC/Kodak', help="Path to input images")
-    parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"])
+    parser.add_argument("--input", type=str, default= '/workspace/SRIC/Kodak', help="Directory of input images. NOTE: in the current Kodak loop this argument is only checked by assert; the actual image path is hard-coded in the loop, so changing it does not affect test images unless the loop is also updated.")
+    parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"], help="Sampler name printed in the log. NOTE: the current script always constructs DDIMSampler, so this argument does not affect test results.")
     # parser.add_argument("--steps", default=30, type=int)
-    parser.add_argument("--scale", default=2.5, type=int)
-    parser.add_argument("--excel", type=str, default='/workspace/SRIC/kodak_caption/kodak_blip.xlsx', help="Path to Excel file containing prompts")
-    parser.add_argument("--output", type=str, default='results_win_gan/', help="Path to save results")
-    parser.add_argument("--ddim_steps",type=int,default=3,help="number of ddim sampling steps",)
-    parser.add_argument("--ddim_eta",type=float,default=0.0,help="ddim eta (eta=0.0 corresponds to deterministic sampling",)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--device", type=str, default="cuda", choices=["cpu", "cuda"])
-    parser.add_argument("--Q",type=float,default=3,help="")
-    parser.add_argument("--add_steps",type=int,default=300,help="")
-    parser.add_argument("--type",type=str,default="lpips")
+    parser.add_argument("--scale", default=2.5, type=float, help="Classifier-free guidance scale used in sampler.decode; larger values make generation follow the prompt more strongly.")
+    parser.add_argument("--excel", type=str, default='/workspace/SRIC/kodak_caption/kodak_blip.xlsx', help="Path to the Excel file that provides prompts/captions for each Kodak image.")
+    parser.add_argument("--output", type=str, default='results_win_gan/', help="Root directory for reconstructed images, bitstreams, and metric json files.")
+    parser.add_argument("--ddim_steps",type=int,default=3,help="Number of DDIM sampling steps used during diffusion decoding. This affects inference speed and reconstruction results.",)
+    parser.add_argument("--ddim_eta",type=float,default=0.0,help="DDIM eta value. eta=0.0 gives deterministic DDIM sampling; larger values add stochasticity and may change results.",)
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
+    parser.add_argument("--device", type=str, default="cuda", choices=["cpu", "cuda"], help="Device used for model inference and metric computation. CPU disables xformers.")
+    parser.add_argument("--Q",type=float,default=3,help="Label for the trained lambda/Q setting, used only in output folder and json paths. NOTE: this does not affect test results in this script.")
+    parser.add_argument("--add_steps",type=int,default=300,help="Label for the add_steps setting, usually aligned with the config/training setting and used only in output folder and json paths. NOTE: this does not affect test results in this script.")
+    parser.add_argument("--type",type=str,default="lpips", help="Label for the training/objective type, used only in output folder and json paths. NOTE: this does not affect test results in this script.")
 
     return parser.parse_args()
 
