@@ -5,7 +5,7 @@ from typing import List, Tuple
 import os
 import pandas as pd
 from argparse import ArgumentParser, Namespace
-os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1'
 import numpy as np
 import torch
 import einops
@@ -23,13 +23,16 @@ from utils.file import list_image_files, get_file_name_parts
 from utils.metrics import calculate_msssim_pt, calculate_psnr_pt, LPIPS
 import prompt_inversion.test_optim_zc as prompt_optmizer
 import prompt_inversion.open_clip as open_clip 
-from nn_indices import arithmetic_decode, arithmetic_encode
+# from nn_indices_new import encode_indices, decode_indices
+# from nn_indices_ten_adaptive import encode_indices, decode_indices
+# 算术编码
+from nn_indices_adaptive import encode_indices, decode_indices
 from neuralcompression.metrics import DeepImageStructureTextureSimilarity
 from torchmetrics.image import (
     LearnedPerceptualImagePatchSimilarity,
 )
 from model.color import wavelet_reconstruction, adaptive_instance_normalization
-from gpt import get_residual_caption, get_image_caption
+from qwen import get_residual_caption, get_image_caption
 
 
 def decode_ids(input_ids, tokenizer, by_token=False):
@@ -46,7 +49,7 @@ def decode_ids(input_ids, tokenizer, by_token=False):
             texts.append(tokenizer.decode(input_ids_i))
     return texts
 # @torch.no_grad()
-def process(model, imgs, args, sampler, stream_path, prompt, clip_model, clip_preprocess):
+def process(model, imgs, args, sampler, stream_path, prompt, clip_model, clip_preprocess, clip_device=None):
    
     n_samples = len(imgs)
     
@@ -83,7 +86,8 @@ def process(model, imgs, args, sampler, stream_path, prompt, clip_model, clip_pr
     if args.pfo:
         residual_caption_optimized, best_ids_res, embedding, best_rec = prompt_optmizer.optimize_prompt(
             clip_model, model, clip_preprocess, args, model.device, compressed_img, 
-            latent_x, args.type, args.Q, target_images=img, prompt=residual_caption)
+            latent_x, args.type, args.Q, target_images=img, prompt=residual_caption,
+            clip_device=clip_device)
         print(f"Optimized residual caption: {residual_caption_optimized}")
     else:
         prompt_ids_res = tokenizer.encode(residual_caption)
@@ -92,17 +96,15 @@ def process(model, imgs, args, sampler, stream_path, prompt, clip_model, clip_pr
     encode_time = time.time() - start_time              
     print(f'prompt_time: {encode_time:.4f} seconds')
 
-    encoded_data_res, cdf_res, unique_chars_res = arithmetic_encode(best_ids_res)
-    decoded_text_res = arithmetic_decode(encoded_data_res, cdf_res, unique_chars_res)
-    decoded_text_res = torch.tensor(list(map(int, decoded_text_res.split(',')))).unsqueeze(0).to(model.device)
-    decoded_text_res = decode_ids(decoded_text_res, tokenizer)[0]
+    encoded_data_res = encode_indices(best_ids_res)
+    best_ids_res_dec = decode_indices(encoded_data_res)
+    decoded_text_res = decode_ids(best_ids_res_dec, tokenizer)[0]
 
     prompt_ids = tokenizer.encode(prompt)
     best_ids = torch.tensor([prompt_ids], device=model.device)
-    encoded_data, cdf, unique_chars = arithmetic_encode(best_ids)
-    decoded_text = arithmetic_decode(encoded_data, cdf, unique_chars)
-    decoded_text = torch.tensor(list(map(int, decoded_text.split(',')))).unsqueeze(0).to(model.device)
-    decoded_text = decode_ids(decoded_text, tokenizer)[0]
+    encoded_data = encode_indices(best_ids)
+    best_ids_dec = decode_indices(encoded_data)
+    decoded_text = decode_ids(best_ids_dec, tokenizer)[0]
 
     print("Prompt:", decoded_text)
     print("Residual Prompt:", decoded_text_res)
@@ -151,7 +153,8 @@ def process(model, imgs, args, sampler, stream_path, prompt, clip_model, clip_pr
     
     if args.pfo:
         if best_rec is not None:
-            best_rec_img = torch.clamp((best_rec + 1.0) / 2.0, min=0.0, max=1.0)
+            best_rec_img = best_rec
+            # best_rec_img = torch.clamp((best_rec + 1.0) / 2.0, min=0.0, max=1.0)
             best_rec_img = (einops.rearrange(best_rec_img, "b c h w -> b h w c") * 255).cpu().numpy().clip(0, 255).astype(np.uint8)
             best_rec_preds = [best_rec_img[i] for i in range(n_samples)]
         else:
@@ -170,29 +173,39 @@ def parse_args() -> Namespace:
         default="wavelet", 
         choices=["wavelet", "adain", "none"],
         help="Color correction method after diffusion decoding. NOTE: currently not used because the color correction code is commented out; changing it does not affect test results.")
-    parser.add_argument("--ckpt", default='**', type=str, help="Path to the trained model checkpoint used for inference. This directly determines the compression/reconstruction model.")
-    parser.add_argument("--config", default='**', type=str, help="Path to the model yaml config that matches the checkpoint, including the compression model and diffusion settings.")
-    parser.add_argument("--json_file_path", type=str, default="**.json", help="Path to the json file containing image_index and original_caption entries used as prompts.")
-    parser.add_argument("--input", type=str, default= '/workspace/test/PRO2.0/Kodak', help="Directory of input images. NOTE: in the current Kodak loop this argument is only checked by assert; the actual image path is hard-coded in the loop, so changing it does not affect test images unless the loop is also updated.")
+    parser.add_argument("--ckpt", default='/workspace/ResULIC/step=199999.ckpt', type=str, help="Path to the trained model checkpoint used for inference. This directly determines the compression/reconstruction model.")
+    parser.add_argument("--config", default='/workspace/ResULIC/configs/model/stage2/1_1_12/cldm_eps_400_ddim.yaml', type=str, help="Path to the model yaml config that matches the checkpoint, including the compression model and diffusion settings.")
+    parser.add_argument("--json_file_path", type=str, default="/workspace/ResULIC/kodak_detailed.json", help="Path to the json file containing image_index and original_caption entries used as prompts.")
+    parser.add_argument("--input", type=str, default= '/datasets/Kodak', help="Directory of input images. NOTE: in the current Kodak loop this argument is only checked by assert; the actual image path is hard-coded in the loop, so changing it does not affect test images unless the loop is also updated.")
     parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"], help="Sampler name printed in the log. NOTE: the current script always constructs DDIMSampler, so this argument does not affect test results.")
     # parser.add_argument("--steps", default=30, type=int)
     parser.add_argument("--scale", default=2.5, type=float, help="Classifier-free guidance scale used in sampler.decode for both original and residual prompts; larger values make generation follow the prompt more strongly.")
     parser.add_argument("--excel", type=str, default='/workspace/test/ProSrc/kodak_caption/kodak_blip.xlsx', help="Path to the Excel caption file. NOTE: prompts are read from --json_file_path in the current loop; this argument is only loaded and does not affect test results here.")
-    parser.add_argument("--output", type=str, default='results_win_res_15/', help="Root directory for reconstructed images, residual results, optional PFO results, bitstreams, and metric json files.")
+    parser.add_argument("--output", type=str, default='/workspace/ResULIC/results/result99', help="Root directory for reconstructed images, residual results, optional PFO results, bitstreams, and metric json files.")
     parser.add_argument("--ddim_steps",type=int,default=3,help="Number of DDIM sampling steps used during diffusion decoding. This affects inference speed and reconstruction results.",)
     parser.add_argument("--ddim_eta",type=float,default=0.0,help="DDIM eta value. eta=0.0 gives deterministic DDIM sampling; larger values add stochasticity and may change results.",)
     parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--device", type=str, default="cuda", choices=["cpu", "cuda"], help="Device used for model inference and metric computation. CPU disables xformers.")
-    parser.add_argument("--Q",type=float,default=4,help="Trained lambda/Q setting passed to the prompt optimizer when --pfo is enabled. Without --pfo, it is only used in output folder and json paths and does not affect test results.")
-    parser.add_argument("--add_steps",type=int,default=300,help="Label for the add_steps setting, usually aligned with the config/training setting and used only in output folder and json paths. NOTE: this does not affect test results in this script.")
-    parser.add_argument("--type",type=str,default="lpips", help="Training/objective type passed to the prompt optimizer when --pfo is enabled. Without --pfo, it is only used in output folder and json paths and does not affect test results.")
+    parser.add_argument("--Q",type=float,default=12.0,help="Trained lambda/Q setting passed to the prompt optimizer when --pfo is enabled. Without --pfo, it is only used in output folder and json paths and does not affect test results.")
+    parser.add_argument("--add_steps",type=int,default=400, help="Training/objective type passed to the prompt optimizer when --pfo is enabled. Without --pfo, it is only used in output folder and json paths and does not affect test results.")
     parser.add_argument("--pfo", action="store_true", help="Enable Prompt Fidelity Optimization for residual captions. This changes the prompt used for the PFO output branch and can affect PFO results.")
+    parser.add_argument("--type",type=str,default="lpips", help="Training/objective type passed to the prompt optimizer when --pfo is enabled. Without --pfo, it is only used in output folder and json paths and does not affect test results.")
+    parser.add_argument("--clip_model", type=str, default="ViT-H-14", help="CLIP model name used for prompt optimization.")
+    parser.add_argument("--clip_pretrain", type=str, default="laion2b_s32b_b79k", help="CLIP pretrained weights name.")
+    parser.add_argument("--iter", type=int, default=100, help="Number of PFO optimization iterations.")
+    parser.add_argument("--lr", type=float, default=0.5, help="Learning rate for PFO prompt optimization.")
+    parser.add_argument("--weight_decay", type=float, default=0.1, help="Weight decay for PFO optimizer.")
+    parser.add_argument("--prompt_bs", type=int, default=1, help="Prompt batch size for PFO initialization.")
+    parser.add_argument("--eval_step", type=int, default=50, help="Evaluation step interval during PFO.")
+    parser.add_argument("--loss_weight", type=float, default=0.1, help="Weight for cosine similarity loss in PFO.")
+    parser.add_argument("--loss_diffusion", type=float, default=1.0, help="Weight for diffusion (MSE) loss in PFO.")
 
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    args.pfo = True
     pl.seed_everything(args.seed)
     
     if args.device == "cpu":
@@ -234,18 +247,20 @@ def main() -> None:
     msssim_scores_pfo = []  
     img_results = [] 
 
+    clip_device = torch.device("cuda:1")
     clip_model, _, clip_preprocess = open_clip.create_model_and_transforms(args.clip_model, 
                                                                             pretrained=args.clip_pretrain, 
-                                                                            device=model.device)
+                                                                            device=clip_device)
     
-    df = pd.read_excel(args.excel)
+    #df = pd.read_excel(args.excel)
     assert os.path.isdir(args.input)
     print(f"Sampling {args.ddim_steps} steps using {args.sampler} sampler")
     # args_clip = Namespace()
 
     for i in range(24):
         file_name = f'kodim{str(i+1).zfill(2)}.png'
-        file_path = os.path.join('/workspace/test/ProSrc/Kodak', file_name)
+        #file_path = os.path.join('/workspace/test/ProSrc/Kodak', file_name)
+        file_path = os.path.join('/datasets/Kodak', file_name)
 
         img = Image.open(file_path).convert("RGB")
         x = pad(np.array(img), scale=64)
@@ -271,7 +286,8 @@ def main() -> None:
 
         preds, pred_res, pred_pfo, bpp, text_bpp, text_bpp_res, total_bpp, total_bpp_res, com_caption, res_caption = process(
             model, [x], args, sampler=sampler,
-            stream_path=stream_path, prompt=prompt, clip_model=clip_model, clip_preprocess=clip_preprocess
+            stream_path=stream_path, prompt=prompt, clip_model=clip_model, clip_preprocess=clip_preprocess,
+            clip_device=clip_device
         )
         pred = preds[0]
         pred_res = pred_res[0]
