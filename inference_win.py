@@ -22,7 +22,7 @@ from utils.file import list_image_files, get_file_name_parts
 from utils.metrics import calculate_msssim_pt, calculate_psnr_pt, LPIPS
 import prompt_inversion.test_optim_zc as prompt_optmizer
 import prompt_inversion.open_clip as open_clip 
-from nn_indices import arithmetic_decode, arithmetic_encode
+from nn_indices import encode_indices, decode_indices
 from neuralcompression.metrics import DeepImageStructureTextureSimilarity
 from torchmetrics.image import (
     LearnedPerceptualImagePatchSimilarity,
@@ -73,13 +73,12 @@ def process(model, imgs, args, sampler, stream_path, prompt):
     prompt_ids = tokenizer.encode(prompt)
     best_ids = torch.tensor([prompt_ids], device=model.device)
     
-    encoded_data, cdf, unique_chars = arithmetic_encode(best_ids)
+    encoded_data = encode_indices(best_ids)
     print(f"text_encode_time: {(time.time() - time_start):.4f} seconds")
     time_start = time.time()
-    decoded_text = arithmetic_decode(encoded_data, cdf, unique_chars)
-    decoded_text = torch.tensor(list(map(int, decoded_text.split(',')))).unsqueeze(0).to(model.device)
+    best_ids_dec = decode_indices(encoded_data)
 
-    decoded_text = decode_ids(decoded_text, tokenizer)[0]
+    decoded_text = decode_ids(best_ids_dec, tokenizer)[0]
     print(f"text_decode_time: {(time.time() - time_start):.4f} seconds")
     print("Prompt:", decoded_text)
     num_pixels = n_samples * height * width
