@@ -5,7 +5,7 @@
 <p align="center">
   Anle&nbsp;Ke<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
   Xu&nbsp;Zhang<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
-  Tong&nbsp;Chen<sup>1</sup> &ensp; <b>&middot;</b> &ensp; 
+  Tong&nbsp;Chen<sup>1*</sup> &ensp; <b>&middot;</b> &ensp; 
   Ming&nbsp;Lu<sup>1</sup>&ensp; <b>&middot;</b> &ensp; 
   Chao&nbsp;Zhou<sup>2</sup>&ensp; <b>&middot;</b> &ensp; 
   Jiawen&nbsp;Gu<sup>2</sup>&ensp; <b>&middot;</b> &ensp;
@@ -29,7 +29,7 @@
 - [✨ Visual Results](#visual_results)
 - [⏳ Train](#computer-train)
 - [😀 Inference](#inference)
-- [🌊 TODO](#todo)
+- [🌊 Updates](#updates)
 - [❤ Acknowledgement](#acknowledgement)
 - [🙇‍ Citation](#cite)
 
@@ -123,11 +123,11 @@
     --add_steps x00
     ```
 
-## <a name="todo"></a>🌊 TODO
+## <a name="updates"></a>🌊 Updates
 - [x] Release code
 - [x] Release quantitative metrics （👾The quantitative metrics for ResULIC presented in our paper can be found in [indicator](/indicator).）
 - [x] Release pretrained models
-
+- [x] Bug-fixing for the text arithmetic coding module. (2026-11-11)
 ## <a name="acknowledgement">❤ Acknowledgement
 This work is based on [ControlNet](https://github.com/lllyasviel/ControlNet), [ControlNet-XS](https://github.com/vislearn/ControlNet-XS), [DiffEIC](https://github.com/huai-chang/DiffEIC), and [ELIC](https://github.com/JiangWeibeta/ELIC), thanks to their invaluable contributions.
 
