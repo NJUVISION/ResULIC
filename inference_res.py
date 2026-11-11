@@ -22,13 +22,13 @@ from utils.file import list_image_files, get_file_name_parts
 from utils.metrics import calculate_msssim_pt, calculate_psnr_pt, LPIPS
 import prompt_inversion.test_optim_zc as prompt_optmizer
 import prompt_inversion.open_clip as open_clip 
-from nn_indices import arithmetic_decode, arithmetic_encode
+from nn_indices import encode_indices, decode_indices
 from neuralcompression.metrics import DeepImageStructureTextureSimilarity
 from torchmetrics.image import (
     LearnedPerceptualImagePatchSimilarity,
 )
 from model.color import wavelet_reconstruction, adaptive_instance_normalization
-from gpt import get_residual_caption, get_image_caption
+from qwen import get_residual_caption, get_image_caption
 # from qwen import get_residual_caption, get_image_caption
 # from sensechat import get_residual_caption, get_image_caption
 # from open_clip import OpenCLIPModel, Preprocess
@@ -81,17 +81,15 @@ def process(model, imgs, args, sampler, stream_path, prompt):
 
     prompt_ids_res = tokenizer.encode(residual_caption)
     best_ids_res = torch.tensor([prompt_ids_res], device=model.device)
-    encoded_data_res, cdf_res, unique_chars_res = arithmetic_encode(best_ids_res)
-    decoded_text_res = arithmetic_decode(encoded_data_res, cdf_res, unique_chars_res)
-    decoded_text_res = torch.tensor(list(map(int, decoded_text_res.split(',')))).unsqueeze(0).to(model.device)
-    decoded_text_res = decode_ids(decoded_text_res, tokenizer)[0]
+    encoded_data_res = encode_indices(best_ids_res)
+    best_ids_res_dec = decode_indices(encoded_data_res)
+    decoded_text_res = decode_ids(best_ids_res_dec, tokenizer)[0]
 
     prompt_ids = tokenizer.encode(prompt)
     best_ids = torch.tensor([prompt_ids], device=model.device)
-    encoded_data, cdf, unique_chars = arithmetic_encode(best_ids)
-    decoded_text = arithmetic_decode(encoded_data, cdf, unique_chars)
-    decoded_text = torch.tensor(list(map(int, decoded_text.split(',')))).unsqueeze(0).to(model.device)
-    decoded_text = decode_ids(decoded_text, tokenizer)[0]
+    encoded_data = encode_indices(best_ids)
+    best_ids_dec = decode_indices(encoded_data)
+    decoded_text = decode_ids(best_ids_dec, tokenizer)[0]
 
     print("Prompt:", decoded_text)
     print("Residual Prompt:", decoded_text_res)
